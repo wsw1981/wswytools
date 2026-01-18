@@ -1,0 +1,698 @@
+<!doctype html>
+<html lang="zh-TW" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>密碼產生器 V3</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+  <style>
+    body {
+      box-sizing: border-box;
+    }
+    
+    * {
+      font-family: 'Noto Sans TC', sans-serif;
+    }
+    
+    .glass-card {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+    }
+    
+    .gradient-bg {
+      background: linear-gradient(135deg, #e8f4fd 0%, #f0f0f5 50%, #e8eef8 100%);
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      transition: all 0.3s ease;
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(79, 172, 254, 0.4);
+    }
+    
+    .btn-secondary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      transition: all 0.3s ease;
+    }
+    
+    .btn-secondary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+    }
+    
+    .btn-success {
+      background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+      transition: all 0.3s ease;
+    }
+    
+    .btn-success:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4);
+    }
+    
+    .symbol-btn {
+      background: rgba(200, 200, 210, 0.3);
+      border: 2px solid rgba(150, 150, 160, 0.3);
+      transition: all 0.3s ease;
+    }
+    
+    .symbol-btn:hover {
+      transform: translateY(-2px);
+      background: rgba(180, 180, 190, 0.4);
+    }
+    
+    .symbol-btn.active {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-color: transparent;
+      color: white;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.5);
+    }
+    
+    .symbol-btn.active:hover {
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+    }
+    
+    .password-item {
+      background: rgba(255, 255, 255, 0.6);
+      border: 1px solid rgba(200, 200, 210, 0.3);
+      transition: all 0.3s ease;
+      animation: slideIn 0.4s ease-out;
+    }
+    
+    .password-item:hover {
+      background: rgba(255, 255, 255, 0.9);
+      transform: translateX(5px);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    
+    .fade-in {
+      animation: fadeIn 0.5s ease-out;
+    }
+    
+    .notification {
+      animation: slideInRight 0.4s ease-out;
+    }
+    
+    @keyframes slideInRight {
+      from {
+        opacity: 0;
+        transform: translateX(100%);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+    
+    .notification-exit {
+      animation: slideOutRight 0.3s ease-in forwards;
+    }
+    
+    @keyframes slideOutRight {
+      to {
+        opacity: 0;
+        transform: translateX(100%);
+      }
+    }
+    
+    select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23667eea'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.75rem center;
+      background-size: 1.5em;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+    }
+    
+    .copy-btn {
+      background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+      transition: all 0.3s ease;
+    }
+    
+    .copy-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4);
+    }
+    
+    .copy-btn:active {
+      transform: scale(0.95);
+    }
+    
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.25rem 0.5rem;
+      border-radius: 0.5rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    
+    .badge-lower {
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+      color: white;
+    }
+    
+    .badge-upper {
+      background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+      color: white;
+    }
+    
+    .badge-number {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      color: white;
+    }
+    
+    .badge-symbol {
+      background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
+      color: white;
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="h-full gradient-bg overflow-auto">
+  <div class="min-h-full w-full flex items-center justify-center p-4 sm:p-6 lg:p-8">
+   <div class="w-full max-w-lg"><!-- Main Card -->
+    <div class="glass-card rounded-3xl shadow-2xl p-6 sm:p-8 fade-in"><!-- Header -->
+     <div class="text-center mb-8">
+      <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-400 to-cyan-400 mb-4 shadow-lg">
+       <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+       </svg>
+      </div>
+      <h1 id="app-title" class="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">密碼產生器</h1>
+      <p class="text-gray-500 text-sm">強化版密碼產生器 - 保證包含大小寫、數字</p>
+     </div><!-- Form -->
+     <form id="password-form" class="space-y-6"><!-- Password Length -->
+      <div class="space-y-2"><label for="password-length" class="block text-sm font-semibold text-gray-700 flex items-center gap-2">
+        <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+        </svg> 密碼長度 </label> <select id="password-length" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-400 focus:ring-4 focus:ring-blue-100 transition-all duration-300 text-gray-700 font-medium bg-white/80 cursor-pointer"> <!-- Options will be generated by JS --> </select>
+      </div><!-- Special Symbols -->
+      <div class="space-y-3"><label class="block text-sm font-semibold text-gray-700 flex items-center gap-2">
+        <svg class="w-4 h-4 text-purple-500" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"></path>
+        </svg> 特殊符號 </label>
+       <div class="flex flex-wrap gap-2 sm:gap-3"><button type="button" id="btn-none" class="symbol-btn px-5 py-3 rounded-xl font-bold text-gray-600 min-w-[60px] text-base"> 無 </button> <button type="button" id="btn-exclaim" class="symbol-btn active px-5 py-3 rounded-xl font-bold text-gray-600 min-w-[60px] text-xl"> ! </button> <button type="button" id="btn-at" class="symbol-btn active px-5 py-3 rounded-xl font-bold text-gray-600 min-w-[60px] text-xl"> @ </button> <button type="button" id="btn-hash" class="symbol-btn active px-5 py-3 rounded-xl font-bold text-gray-600 min-w-[60px] text-xl"> # </button> <button type="button" id="btn-dollar" class="symbol-btn active px-5 py-3 rounded-xl font-bold text-gray-600 min-w-[60px] text-xl"> $ </button>
+       </div>
+       <p class="text-xs text-gray-400 mt-1">選擇要包含的特殊符號，選「無」則不包含任何特殊符號</p>
+      </div><!-- Password Count -->
+      <div class="space-y-2"><label for="password-count" class="block text-sm font-semibold text-gray-700 flex items-center gap-2">
+        <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+        </svg> 產生幾組密碼 </label> <select id="password-count" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-400 focus:ring-4 focus:ring-blue-100 transition-all duration-300 text-gray-700 font-medium bg-white/80 cursor-pointer"> <!-- Options will be generated by JS --> </select>
+      </div><!-- Generate Button --> <button type="submit" id="generate-btn" class="w-full btn-primary text-white font-bold py-4 px-6 rounded-xl shadow-lg flex items-center justify-center gap-2 text-lg">
+       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+       </svg><span id="generate-btn-text">產生密碼</span> </button>
+     </form><!-- Results Section -->
+     <div id="results-section" class="mt-8 hidden">
+      <div class="flex items-center justify-between mb-4">
+       <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+        <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg> 產生的密碼</h2><button type="button" id="copy-all-btn" class="btn-secondary text-white text-sm font-medium py-2 px-4 rounded-lg flex items-center gap-1">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path>
+        </svg> 全部複製 </button>
+      </div>
+      <div id="passwords-list" class="space-y-3"><!-- Passwords will be inserted here -->
+      </div>
+     </div>
+    </div><!-- Footer -->
+    <p class="text-center text-gray-400 text-xs mt-6">🔐 密碼保證包含大小寫英文、數字，絕對安全可靠</p>
+   </div>
+  </div><!-- Notification Container -->
+  <div id="notification-container" class="fixed top-4 right-4 z-50 space-y-2"><!-- Notifications will be inserted here -->
+  </div>
+  <script>
+    // Default configuration
+    const defaultConfig = {
+      app_title: '密碼產生器 V3',
+      generate_button_text: '產生密碼',
+      primary_color: '#4facfe',
+      secondary_color: '#667eea',
+      text_color: '#1f2937',
+      background_color: '#e8f4fd',
+      surface_color: '#ffffff',
+      font_family: 'Noto Sans TC',
+      font_size: 16
+    };
+    
+    // Symbol button states
+    const symbolState = {
+      none: false,
+      exclaim: true,
+      at: true,
+      hash: true,
+      dollar: true
+    };
+    
+    // Generated passwords storage
+    let generatedPasswords = [];
+    
+    // Initialize dropdowns
+    function initDropdowns() {
+      const lengthSelect = document.getElementById('password-length');
+      const countSelect = document.getElementById('password-count');
+      
+      // Password length: 6-20, default 12
+      for (let i = 6; i <= 20; i++) {
+        const option = document.createElement('option');
+        option.value = i;
+        option.textContent = `${i} 字元`;
+        if (i === 12) option.selected = true;
+        lengthSelect.appendChild(option);
+      }
+      
+      // Password count: 1-20, default 1
+      for (let i = 1; i <= 20; i++) {
+        const option = document.createElement('option');
+        option.value = i;
+        option.textContent = `${i} 組`;
+        if (i === 1) option.selected = true;
+        countSelect.appendChild(option);
+      }
+    }
+    
+    // Update symbol button UI
+    function updateSymbolButtons() {
+      document.getElementById('btn-none').classList.toggle('active', symbolState.none);
+      document.getElementById('btn-exclaim').classList.toggle('active', symbolState.exclaim);
+      document.getElementById('btn-at').classList.toggle('active', symbolState.at);
+      document.getElementById('btn-hash').classList.toggle('active', symbolState.hash);
+      document.getElementById('btn-dollar').classList.toggle('active', symbolState.dollar);
+    }
+    
+    // Handle symbol button clicks
+    function setupSymbolButtons() {
+      const btnNone = document.getElementById('btn-none');
+      const btnExclaim = document.getElementById('btn-exclaim');
+      const btnAt = document.getElementById('btn-at');
+      const btnHash = document.getElementById('btn-hash');
+      const btnDollar = document.getElementById('btn-dollar');
+      
+      btnNone.addEventListener('click', () => {
+        if (!symbolState.none) {
+          symbolState.none = true;
+          symbolState.exclaim = false;
+          symbolState.at = false;
+          symbolState.hash = false;
+          symbolState.dollar = false;
+        } else {
+          symbolState.none = false;
+        }
+        updateSymbolButtons();
+      });
+      
+      const handleSymbolClick = (key) => {
+        symbolState[key] = !symbolState[key];
+        if (symbolState[key]) {
+          symbolState.none = false;
+        }
+        updateSymbolButtons();
+      };
+      
+      btnExclaim.addEventListener('click', () => handleSymbolClick('exclaim'));
+      btnAt.addEventListener('click', () => handleSymbolClick('at'));
+      btnHash.addEventListener('click', () => handleSymbolClick('hash'));
+      btnDollar.addEventListener('click', () => handleSymbolClick('dollar'));
+    }
+    
+    // Shuffle array using Fisher-Yates algorithm
+    function shuffleArray(array) {
+      const arr = [...array];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const randomValues = new Uint32Array(1);
+        crypto.getRandomValues(randomValues);
+        const j = randomValues[0] % (i + 1);
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+    
+    // Get random character from a string
+    function getRandomChar(charset) {
+      const randomValues = new Uint32Array(1);
+      crypto.getRandomValues(randomValues);
+      return charset[randomValues[0] % charset.length];
+    }
+    
+    // Generate password with guaranteed constraints
+    function generatePassword(length, selectedSymbols) {
+      const lowercase = 'abcdefghijklmnopqrstuvwxyz';
+      const uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+      const numbers = '0123456789';
+      
+      // Minimum length check
+      const minLength = selectedSymbols.length > 0 ? 5 : 3; // Need space for lower, upper, number, and 1-2 symbols
+      if (length < minLength) {
+        length = minLength;
+      }
+      
+      const passwordChars = [];
+      
+      // Step 1: Add required characters (lowercase, uppercase, number)
+      passwordChars.push(getRandomChar(lowercase)); // At least 1 lowercase
+      passwordChars.push(getRandomChar(uppercase)); // At least 1 uppercase
+      passwordChars.push(getRandomChar(numbers));   // At least 1 number
+      
+      // Step 2: Add 1-2 special symbols if selected
+      let symbolsToAdd = 0;
+      if (selectedSymbols.length > 0) {
+        // Randomly decide to add 1 or 2 symbols
+        const randomValues = new Uint32Array(1);
+        crypto.getRandomValues(randomValues);
+        symbolsToAdd = (randomValues[0] % 2) + 1; // 1 or 2
+        
+        // Make sure we don't exceed available symbols or remaining space
+        symbolsToAdd = Math.min(symbolsToAdd, selectedSymbols.length, length - 3);
+        
+        // Shuffle symbols and pick the first symbolsToAdd
+        const shuffledSymbols = shuffleArray(selectedSymbols);
+        for (let i = 0; i < symbolsToAdd; i++) {
+          passwordChars.push(shuffledSymbols[i]);
+        }
+      }
+      
+      // Step 3: Fill remaining positions with random characters from all available sets
+      const allChars = lowercase + uppercase + numbers + (selectedSymbols.length > 0 ? selectedSymbols.join('') : '');
+      const remainingLength = length - passwordChars.length;
+      
+      for (let i = 0; i < remainingLength; i++) {
+        passwordChars.push(getRandomChar(allChars));
+      }
+      
+      // Step 4: Shuffle all characters to randomize positions
+      const shuffledPassword = shuffleArray(passwordChars);
+      
+      // Step 5: Verify final length matches requirement
+      const password = shuffledPassword.join('');
+      
+      // Final validation
+      if (password.length !== length) {
+        // Recursive call if length doesn't match (shouldn't happen, but safety check)
+        return generatePassword(length, selectedSymbols);
+      }
+      
+      return password;
+    }
+    
+    // Get selected symbols
+    function getSelectedSymbols() {
+      if (symbolState.none) {
+        return [];
+      }
+      
+      const symbols = [];
+      if (symbolState.exclaim) symbols.push('!');
+      if (symbolState.at) symbols.push('@');
+      if (symbolState.hash) symbols.push('#');
+      if (symbolState.dollar) symbols.push('$');
+      return symbols;
+    }
+    
+    // Analyze password composition
+    function analyzePassword(password) {
+      const lowercase = /[a-z]/;
+      const uppercase = /[A-Z]/;
+      const numbers = /[0-9]/;
+      const symbols = /[!@#$]/;
+      
+      return {
+        hasLowercase: lowercase.test(password),
+        hasUppercase: uppercase.test(password),
+        hasNumber: numbers.test(password),
+        hasSymbol: symbols.test(password),
+        lowercaseCount: (password.match(/[a-z]/g) || []).length,
+        uppercaseCount: (password.match(/[A-Z]/g) || []).length,
+        numberCount: (password.match(/[0-9]/g) || []).length,
+        symbolCount: (password.match(/[!@#$]/g) || []).length
+      };
+    }
+    
+    // Show notification
+    function showNotification(message, type = 'success') {
+      const container = document.getElementById('notification-container');
+      const notification = document.createElement('div');
+      
+      const bgClass = type === 'success' ? 'bg-gradient-to-r from-green-500 to-teal-500' : 'bg-gradient-to-r from-red-500 to-pink-500';
+      const icon = type === 'success' 
+        ? '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>'
+        : '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>';
+      
+      notification.className = `notification ${bgClass} text-white px-4 py-3 rounded-xl shadow-lg flex items-center gap-2 text-sm font-medium`;
+      notification.innerHTML = `${icon}<span>${message}</span>`;
+      
+      container.appendChild(notification);
+      
+      setTimeout(() => {
+        notification.classList.add('notification-exit');
+        setTimeout(() => notification.remove(), 300);
+      }, 3000);
+    }
+    
+    // Copy to clipboard
+    async function copyToClipboard(text) {
+      try {
+        await navigator.clipboard.writeText(text);
+        return true;
+      } catch (err) {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        try {
+          document.execCommand('copy');
+          document.body.removeChild(textarea);
+          return true;
+        } catch (e) {
+          document.body.removeChild(textarea);
+          return false;
+        }
+      }
+    }
+    
+    // Render passwords list
+    function renderPasswords() {
+      const resultsSection = document.getElementById('results-section');
+      const passwordsList = document.getElementById('passwords-list');
+      
+      if (generatedPasswords.length === 0) {
+        resultsSection.classList.add('hidden');
+        return;
+      }
+      
+      resultsSection.classList.remove('hidden');
+      passwordsList.innerHTML = '';
+      
+      generatedPasswords.forEach((passwordObj, index) => {
+        const { password, analysis } = passwordObj;
+        
+        const item = document.createElement('div');
+        item.className = 'password-item rounded-xl p-4';
+        item.style.animationDelay = `${index * 0.05}s`;
+        
+        item.innerHTML = `
+          <div class="flex items-center justify-between gap-3">
+            <div class="flex items-center gap-3 flex-1 min-w-0">
+              <span class="flex-shrink-0 w-8 h-8 rounded-lg bg-gradient-to-br from-blue-400 to-cyan-400 text-white text-sm font-bold flex items-center justify-center">
+                ${index + 1}
+              </span>
+              <code class="text-gray-800 font-mono text-sm sm:text-base break-all flex-1 font-semibold">${password}</code>
+            </div>
+            <button type="button" class="copy-btn flex-shrink-0 text-white p-2 rounded-lg" data-password="${password}" title="複製密碼">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+              </svg>
+            </button>
+          </div>
+        `;
+        
+        passwordsList.appendChild(item);
+      });
+      
+      // Add click handlers for copy buttons
+      passwordsList.querySelectorAll('.copy-btn').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const password = btn.dataset.password;
+          const success = await copyToClipboard(password);
+          if (success) {
+            showNotification('密碼已複製到剪貼簿！');
+          } else {
+            showNotification('複製失敗，請手動選取複製', 'error');
+          }
+        });
+      });
+    }
+    
+    // Handle form submission
+    function setupForm() {
+      const form = document.getElementById('password-form');
+      
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        const length = parseInt(document.getElementById('password-length').value);
+        const count = parseInt(document.getElementById('password-count').value);
+        const selectedSymbols = getSelectedSymbols();
+        
+        generatedPasswords = [];
+        for (let i = 0; i < count; i++) {
+          const password = generatePassword(length, selectedSymbols);
+          const analysis = analyzePassword(password);
+          generatedPasswords.push({ password, analysis });
+        }
+        
+        renderPasswords();
+        showNotification(`已成功產生 ${count} 組安全密碼！`);
+      });
+    }
+    
+    // Copy all passwords
+    function setupCopyAll() {
+      const copyAllBtn = document.getElementById('copy-all-btn');
+      
+      copyAllBtn.addEventListener('click', async () => {
+        if (generatedPasswords.length === 0) return;
+        
+        const allPasswords = generatedPasswords.map(p => p.password).join('\n');
+        const success = await copyToClipboard(allPasswords);
+        if (success) {
+          showNotification(`已複製全部 ${generatedPasswords.length} 組密碼！`);
+        } else {
+          showNotification('複製失敗，請手動選取複製', 'error');
+        }
+      });
+    }
+    
+    // Config change handler
+    async function onConfigChange(config) {
+      const title = config.app_title || defaultConfig.app_title;
+      const btnText = config.generate_button_text || defaultConfig.generate_button_text;
+      const fontFamily = config.font_family || defaultConfig.font_family;
+      const fontSize = config.font_size || defaultConfig.font_size;
+      const textColor = config.text_color || defaultConfig.text_color;
+      const backgroundColor = config.background_color || defaultConfig.background_color;
+      
+      document.getElementById('app-title').textContent = title;
+      document.getElementById('generate-btn-text').textContent = btnText;
+      
+      document.body.style.fontFamily = `${fontFamily}, sans-serif`;
+      document.getElementById('app-title').style.fontFamily = `${fontFamily}, sans-serif`;
+      
+      document.getElementById('app-title').style.fontSize = `${fontSize * 1.75}px`;
+      
+      document.body.style.background = `linear-gradient(135deg, ${backgroundColor} 0%, #f0f0f5 50%, ${backgroundColor} 100%)`;
+      document.getElementById('app-title').style.color = textColor;
+    }
+    
+    // Map to capabilities
+    function mapToCapabilities(config) {
+      return {
+        recolorables: [
+          {
+            get: () => config.background_color || defaultConfig.background_color,
+            set: (value) => {
+              config.background_color = value;
+              window.elementSdk.setConfig({ background_color: value });
+            }
+          },
+          {
+            get: () => config.surface_color || defaultConfig.surface_color,
+            set: (value) => {
+              config.surface_color = value;
+              window.elementSdk.setConfig({ surface_color: value });
+            }
+          },
+          {
+            get: () => config.text_color || defaultConfig.text_color,
+            set: (value) => {
+              config.text_color = value;
+              window.elementSdk.setConfig({ text_color: value });
+            }
+          },
+          {
+            get: () => config.primary_color || defaultConfig.primary_color,
+            set: (value) => {
+              config.primary_color = value;
+              window.elementSdk.setConfig({ primary_color: value });
+            }
+          },
+          {
+            get: () => config.secondary_color || defaultConfig.secondary_color,
+            set: (value) => {
+              config.secondary_color = value;
+              window.elementSdk.setConfig({ secondary_color: value });
+            }
+          }
+        ],
+        borderables: [],
+        fontEditable: {
+          get: () => config.font_family || defaultConfig.font_family,
+          set: (value) => {
+            config.font_family = value;
+            window.elementSdk.setConfig({ font_family: value });
+          }
+        },
+        fontSizeable: {
+          get: () => config.font_size || defaultConfig.font_size,
+          set: (value) => {
+            config.font_size = value;
+            window.elementSdk.setConfig({ font_size: value });
+          }
+        }
+      };
+    }
+    
+    // Map to edit panel values
+    function mapToEditPanelValues(config) {
+      return new Map([
+        ['app_title', config.app_title || defaultConfig.app_title],
+        ['generate_button_text', config.generate_button_text || defaultConfig.generate_button_text]
+      ]);
+    }
+    
+    // Initialize application
+    function init() {
+      initDropdowns();
+      setupSymbolButtons();
+      setupForm();
+      setupCopyAll();
+      
+      if (window.elementSdk) {
+        window.elementSdk.init({
+          defaultConfig,
+          onConfigChange,
+          mapToCapabilities,
+          mapToEditPanelValues
+        });
+      }
+    }
+    
+    init();
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9bfdcccf52830738',t:'MTc2ODczNjI0My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
